@@ -8,14 +8,14 @@ module prbs16(
    reg [15:0] lfsrReg;
 
    initial begin
-      lfsrReg <= $random;
+      lfsrReg <= 16'hFFFF;
    end
    
    always @(posedge clk)
      begin
 	if (rst)
 	  begin
-	     lfsrReg <= $random;
+	     lfsrReg <= 16'hFFFF;
 	  end
 	else if (shiftEn)
 	  begin
@@ -38,7 +38,7 @@ module prbs16(
 	  end
 	if(lfsrReg == 16'h0000)
 	  begin
-	     lfsrReg <= $random;
+	     lfsrReg <= 16'hFFFF;
 	  end
 	outSeq <= lfsrReg;
      end
