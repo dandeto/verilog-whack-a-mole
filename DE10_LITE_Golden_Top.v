@@ -128,7 +128,8 @@ module DE10_LITE_Golden_Top(
 //=======================================================
    wire [15:0] cur_rnd_num;
    reg [23:0] score = 0;
-
+   wire [23:0] count;
+   
 
 
 //=======================================================
@@ -140,7 +141,17 @@ module DE10_LITE_Golden_Top(
 		.shiftEn(1),
 		.outSeq(cur_rnd_num)
 		);
-  
+
+   up_counter #(
+		.WIDTH (24),
+		.TERM_CNT (20000)
+		) counter (
+			 .clk(MAX10_CLK1_50),
+			 .reset(0),
+			 .en(1),
+			 .count(count)
+			 );
+   
    
    display_driver hex_leds (
 			    .clk        (MAX10_CLK1_50),
