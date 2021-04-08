@@ -126,8 +126,8 @@ module DE10_LITE_Golden_Top(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-   reg [15:0] cur_rnd_num;
-   reg [23:0] high_score = 0;
+   wire [15:0] cur_rnd_num;
+   reg [23:0] score = 0;
 
 
 
@@ -146,7 +146,7 @@ module DE10_LITE_Golden_Top(
 			    .clk        (MAX10_CLK1_50),
 			    .dispMode   (1),
 			    .oneMsPulse (1),
-			    .OpResult   (high_score),
+			    .score   	 (score),
 			    .HEX0       (HEX0),
 			    .HEX1       (HEX1),
 			    .HEX2       (HEX2),
