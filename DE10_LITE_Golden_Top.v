@@ -126,25 +126,34 @@ module DE10_LITE_Golden_Top(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-assign LEDR[0] = 1'b1; // test
+   reg [15:0] cur_rnd_num;
+   reg [23:0] high_score = 0;
 
 
 
 //=======================================================
 //  Structural coding
 //=======================================================
-/*display_driver hex_leds (
-  .clk        (clk66_667),
-  .dispMode   (1),
-  .oneMsPulse (1),
-  .OpResult   (opResult[WIDTH-1:0]),
-  .HEX0       (HEX0),
-  .HEX1       (HEX1),
-  .HEX2       (HEX2),
-  .HEX3       (HEX3),
-  .HEX4       (HEX4),
-  .HEX5       (HEX5)
-);*/
+   prbs16 prng (
+		.clk(MAX10_CLK1_50),
+		.rst(0),
+		.shiftEn(1),
+		.outSeq(cur_rnd_num)
+		);
+  
+   
+   display_driver hex_leds (
+			    .clk        (MAX10_CLK1_50),
+			    .dispMode   (1),
+			    .oneMsPulse (1),
+			    .OpResult   (high_score),
+			    .HEX0       (HEX0),
+			    .HEX1       (HEX1),
+			    .HEX2       (HEX2),
+			    .HEX3       (HEX3),
+			    .HEX4       (HEX4),
+			    .HEX5       (HEX5)
+			    );
 
 
 endmodule
