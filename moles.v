@@ -4,10 +4,12 @@ module moles (
 	input [27:0]     count, 
 	input [9:0]      random, // number from prbs
 	input [9:0]      switch,
-	output reg [9:0] moles   // array of 10 led signals
+	output reg [9:0] moles,  // array of 10 led signals
+	output [23:0] score
 );
 
 	reg [9:0] switch_buffer = 10'b0;
+	reg [23:0] score_reg = 0;
 	integer i;
    
 	always @(posedge clk) begin // when random changes
@@ -18,12 +20,18 @@ module moles (
 		end else begin
 			for(i = 0; i < 10; i = i + 1) begin
 				if (switch[i] == ~switch_buffer[i]) begin
-					moles[i] <= 1'b0; // get scoring from count
-					switch_buffer[i] <= switch[i];
-					// score = (20000000 - count); // then take the top 8 bits
+					if(moles[i] == 1'b1) begin
+						moles[i] <= 1'b0;
+						score_reg <= score_reg + 1'b1; // get scoring from count later
+					end else if(moles[i] == 1'b0 && score_reg > 0) begin
+						score_reg <= score_reg - 1'b1;
+					end
+					switch_buffer[i] <= switch[i]; // update switch buffer
 				end
 			end
 		end
 	end
 
+	assign score = score_reg;
+	
 endmodule

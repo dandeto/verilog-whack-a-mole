@@ -22,7 +22,7 @@ module display_driver (
   assign DEC_POWER[1] = 16'd10;
   assign DEC_POWER[0] = 16'd1;
   
-  reg [1:0]  displayState;
+  reg [1:0]  displayState = 0;
   reg [11:0] threeSecCnt;
   
   reg [15:0] decResult;

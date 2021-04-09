@@ -127,7 +127,7 @@ module DE10_LITE_Golden_Top(
 //  REG/WIRE declarations
 //=======================================================
    wire [9:0] cur_rnd_num;
-   reg [23:0] score = 0;
+   wire [23:0] score;
    wire [27:0] count;
    wire [9:0]  moles_out;
    
@@ -159,7 +159,8 @@ module DE10_LITE_Golden_Top(
 	    .count(count),
 	    .random(cur_rnd_num), // number from prbs
 		 .switch({SW[9], SW[8], SW[7], SW[6], SW[5], SW[4], SW[3], SW[2], SW[1], SW[0]}),
-	    .moles(moles_out)
+	    .moles(moles_out),
+		 .score(score)
 	    );
 
    // in the future, AND the moles_out signal with collision state from respective switch.
