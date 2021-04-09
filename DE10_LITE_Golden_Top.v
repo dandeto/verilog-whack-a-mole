@@ -126,10 +126,10 @@ module DE10_LITE_Golden_Top(
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-   wire [15:0] cur_rnd_num;
+   wire [9:0] cur_rnd_num;
    reg [23:0] score = 0;
-   wire [23:0] count;
-	wire [9:0] moles_out;
+   wire [27:0] count;
+   wire [9:0]  moles_out;
    
 
 
@@ -144,24 +144,25 @@ module DE10_LITE_Golden_Top(
 		);
 
    up_counter #(
-		.WIDTH (16),
-		.TERM_CNT (20000)
+		.WIDTH (28),
+		.TERM_CNT (20000000)
 		) counter (
-			 .clk(MAX10_CLK1_50),
-			 .reset(0),
-			 .en(1),
-			 .count(count)
-			 );
+			   .clk(MAX10_CLK1_50),
+			   .reset(0),
+			   .en(1),
+			   .count(count)
+			   );
    
- moles m (
-	.clk(MAX10_CLK1_50),
-	.rst(0),
-	.random(10'b0010010011), // number from prbs
-	.moles(moles_out)
-);
+   moles m (
+	    .clk(MAX10_CLK1_50),
+	    .rst(0),
+	    .count(count),
+	    .random(cur_rnd_num), // number from prbs
+	    .moles(moles_out)
+	    );
 
-// in the future, AND the moles_out signal with collision state from respective switch.
-assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], LEDR[1], LEDR[0]} = moles_out;
+   // in the future, AND the moles_out signal with collision state from respective switch.
+   assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], LEDR[1], LEDR[0]} = moles_out;
    
    display_driver hex_leds (
 			    .clk        (MAX10_CLK1_50),
@@ -175,7 +176,7 @@ assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], 
 			    .HEX4       (HEX4),
 			    .HEX5       (HEX5)
 			    );
-				 
+   
 
 				 
 endmodule
