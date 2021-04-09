@@ -158,6 +158,7 @@ module DE10_LITE_Golden_Top(
 	    .rst(0),
 	    .count(count),
 	    .random(cur_rnd_num), // number from prbs
+		 .switch({SW[9], SW[8], SW[7], SW[6], SW[5], SW[4], SW[3], SW[2], SW[1], SW[0]}),
 	    .moles(moles_out)
 	    );
 

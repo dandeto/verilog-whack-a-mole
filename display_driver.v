@@ -3,12 +3,12 @@ module display_driver (
   input        dispMode,
   input        oneMsPulse,
   input [23:0] score,
+  input [23:0] highscore,
   output [7:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
 );
 
-  localparam SHOW_RESULT = 2'b00;
-  localparam SHOW_OPREG  = 2'b01;
-  localparam SHOW_OPCODE = 2'b10;
+  localparam GAME       = 1'b0; // display mode enum
+  localparam HIGHSCORE  = 1'b1;
   
   localparam CHAR_R = 5'h10;
   localparam CHAR_O = 5'h11;
@@ -42,7 +42,7 @@ module display_driver (
   
   always @(*)
   begin
-    if (displayState == SHOW_RESULT) begin // regular score
+    if (displayState == GAME) begin // regular score
       if (dispMode) // hex
         {char5,char4,char3,char2,char1,char0} = {1'b0,score[23:20],1'b0,score[19:16],1'b0,score[15:12],1'b0,score[11:8],1'b0,score[7:4],1'b0,score[3:0]};
       else begin // decimal
@@ -53,10 +53,8 @@ module display_driver (
         char1 = {1'b0,decDigits[1]};
         char0 = {1'b0,decDigits[0]};
       end
-    end else if (displayState==SHOW_OPREG) begin
-      //{char5,char4,char3,char2,char1,char0} = {CHAR_R,5'hE,CHAR_G,CHAR_BLANK,1'b0,OpReg[7:4],1'b0,OpReg[3:0]};
-    end else begin
-      //{char5,char4,char3,char2,char1,char0} = {5'hC,CHAR_O,5'hD,5'hE,CHAR_BLANK,2'd0,OpCode[2:0]};
+    end else begin // high score
+      {char5,char4,char3,char2,char1,char0} = {1'b0,highscore[23:20],1'b0,highscore[19:16],1'b0,highscore[15:12],1'b0,highscore[11:8],1'b0,highscore[7:4],1'b0,highscore[3:0]};
     end
   end
 

@@ -6,9 +6,6 @@ module up_counter #(
   output reg [WIDTH-1:0] count
 );
 
-// e.g. if FREQ_KHZ is 50000, counting from 0 to 49999 has a 
-// period of 50000 clock cycles
-
 
 always @(posedge clk)
 begin
