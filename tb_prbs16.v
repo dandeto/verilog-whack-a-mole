@@ -2,7 +2,7 @@
 module tb_prbs16 ();
 
    reg clk = 0;
-   wire [15:0] outSeq;
+   wire [9:0] outSeq;
 
    initial begin
       #10 clk = ~clk;
