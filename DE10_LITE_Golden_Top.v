@@ -145,7 +145,7 @@ module DE10_LITE_Golden_Top(
 
    up_counter #(
 		.WIDTH (28),
-		.TERM_CNT (20000000)
+		.TERM_CNT (50000000)
 		) counter (
 			   .clk(MAX10_CLK1_50),
 			   .reset(0),

@@ -10,10 +10,10 @@ module moles (
 	reg [9:0] switch_buffer = 10'b0;
 	integer i;
    
-	always @(count, switch) begin // when random changes
+	always @(posedge clk) begin // when random changes
 		if (rst == 1) begin
 			moles <= 9'b0;
-		end else if (count == 20000000) begin // change moles
+		end else if (count == 50000000) begin // change moles
 			moles <= random;
 		end else begin
 			for(i = 0; i < 10; i = i + 1) begin
