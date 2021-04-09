@@ -119,12 +119,6 @@ module tb_prbs16 ();
       #10 clk = ~clk;
       #10 clk = ~clk;
    end
-   
-   reg [15:0] tmp;
-
-   always @(posedge clk) begin
-      tmp <= $random;
-   end
 
    prbs16 prbs(
 	       .clk(clk),
