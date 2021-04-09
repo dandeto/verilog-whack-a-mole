@@ -2,7 +2,7 @@ module prbs16(
 	      input 		clk,
 	      input 		rst,
 	      input 		shiftEn,
-	      output reg [15:0] outSeq
+	      output [15:0] outSeq
 	      );
 
    reg [15:0] lfsrReg;
@@ -40,6 +40,6 @@ module prbs16(
 	  begin
 	     lfsrReg <= 16'hFFFF;
 	  end
-	outSeq <= lfsrReg;
      end
+   assign outSeq = lfsrReg;
 endmodule
