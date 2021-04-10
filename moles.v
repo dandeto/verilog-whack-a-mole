@@ -15,6 +15,7 @@ module moles (
 	always @(posedge clk) begin // when random changes
 		if (rst == 1) begin
 			moles = 0;
+			score_reg = 0;
 		end else if (count == 200000000) begin // change moles
 			moles = random;
 		end else begin

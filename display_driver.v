@@ -2,6 +2,7 @@ module display_driver (
   input clk,
   input        dispMode,
   input        oneMsPulse,
+  input 			reset,
   input [23:0] score,
   input [23:0] highscore,
   output [7:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
@@ -42,6 +43,11 @@ module display_driver (
   
   always @(*)
   begin
+	if(reset) begin
+	displayState = 1;
+	end else begin
+	displayState = 0;
+	end
     if (displayState == GAME) begin // regular score
       if (dispMode) // hex
         {char5,char4,char3,char2,char1,char0} = {1'b0,score[23:20],1'b0,score[19:16],1'b0,score[15:12],1'b0,score[11:8],1'b0,score[7:4],1'b0,score[3:0]};
