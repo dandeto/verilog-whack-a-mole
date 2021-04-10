@@ -130,7 +130,7 @@ module DE10_LITE_Golden_Top(
    wire [23:0] score;
    wire [27:0] count;
    wire [9:0]  moles_out;
-   
+   reg [23:0] high_score;
 
 
 //=======================================================
@@ -148,14 +148,14 @@ module DE10_LITE_Golden_Top(
 		.TERM_CNT (200000000)
 		) counter (
 			   .clk(MAX10_CLK1_50),
-			   .reset(0),
+			   .reset(~KEY[0]),
 			   .en(1),
 			   .count(count)
 			   );
    
    moles m (
 	    .clk(MAX10_CLK1_50),
-	    .rst(0),
+	    .rst(~KEY[0]),
 	    .count(count),
 	    .random(cur_rnd_num), // number from prbs
 		 .switch({SW[9], SW[8], SW[7], SW[6], SW[5], SW[4], SW[3], SW[2], SW[1], SW[0]}),
@@ -163,14 +163,23 @@ module DE10_LITE_Golden_Top(
 		 .score(score)
 	    );
 
+	always @(posedge MAX10_CLK1_50) begin
+		if (score > high_score) begin
+			high_score = score;
+		end
+	end
+		 
    // in the future, AND the moles_out signal with collision state from respective switch.
    assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], LEDR[1], LEDR[0]} = moles_out;
    
+	
    display_driver hex_leds (
 			    .clk        (MAX10_CLK1_50),
 			    .dispMode   (1),
 			    .oneMsPulse (1),
+				 .reset		 (~KEY[0]),
 			    .score   	 (score),
+				 .highscore  (high_score),
 			    .HEX0       (HEX0),
 			    .HEX1       (HEX1),
 			    .HEX2       (HEX2),
