@@ -5,34 +5,29 @@ module moles (
 	input [9:0]      random, // number from prbs
 	input [9:0]      switch,
 	output reg [9:0] moles,  // array of 10 led signals
-	output [23:0] score
+	output reg [23:0] score
 );
 
 	reg [9:0] switch_buffer = 0;
-	reg [23:0] score_reg = 0;
 	integer i;
    
 	always @(posedge clk) begin // when random changes
 		if (rst == 1) begin
-			moles = 0;
-			score_reg = 0;
-		end else if (count == 200000000) begin // change moles
-			moles = random;
+			moles <= 0;
+			score <= 0;
+		end else if (count == 100000000) begin // change moles
+			moles <= random;
 		end else begin
 			for(i = 0; i < 10; i = i + 1) begin
 				if (switch[i] == ~switch_buffer[i]) begin
 					if(moles[i] == 1) begin
-						moles[i] = 0;
-						score_reg = score_reg + 1; // get scoring from count later
-					end else if(score_reg > 0) begin
-						score_reg = score_reg - 1;
-					end
-					switch_buffer[i] = switch[i]; // update switch buffer
+						moles[i] <= 0;
+						score <= score + ((100000000 - count) >> 12); // get scoring from count, left shift to reduce score size
+					end 
+					switch_buffer[i] <= switch[i]; // update switch buffer
 				end
 			end
 		end
 	end
 
-	assign score = score_reg;
-	
 endmodule
