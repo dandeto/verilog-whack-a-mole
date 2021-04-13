@@ -13,7 +13,7 @@ module moles (
    
 	always @(posedge clk) begin // when random changes
 		if (rst == 1) begin
-			moles <= 0;
+			moles <= switch;
 			score <= 0;
 		end else if (count == 100000000) begin // change moles
 			moles <= random;
@@ -29,5 +29,4 @@ module moles (
 			end
 		end
 	end
-
 endmodule
