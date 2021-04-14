@@ -126,12 +126,29 @@ module DE10_LITE_Golden_Top(
 	wire [9:0]  moles_out;
 	reg  [23:0] high_score;
 	wire        display_state;
-	wire        divided_clk;
-
+	wire        mole_clk;
+	wire        round_clk;
+	wire        game_state;
+	wire        start_button; // debounce output+
+	reg button;
+	wire [3:0]  led_select;
+	
+	reg         start_button_delay; // delay by 1 clock cycle for falling edge detect
 
 //=======================================================
 //  Structural coding
 //=======================================================
+
+always @(posedge MAX10_CLK1_50)
+  begin
+    start_button_delay <= start_button;
+    if (start_button==1'b0 && start_button_delay==1'b1) begin
+      button <= 1'b1;
+    end else begin
+      button <= 1'b0;
+    end
+  end
+
 	prbs16 prng (
 		.clk(MAX10_CLK1_50),
 		.rst(0),
@@ -139,20 +156,71 @@ module DE10_LITE_Golden_Top(
 		.outSeq(cur_rnd_num)
 	);
 
+	gameFSM fsm (
+		.clk(MAX10_CLK1_50),   //
+		.start_btn(button),
+		.time_up(round_clk),
+		.game_state(game_state)
+	);
+	
 	up_counter #(
 		.WIDTH (28),
 		.TERM_CNT (100000000)
-	) counter (
+	) mole_counter (
 		.clk(MAX10_CLK1_50),
-		.reset(~KEY[0]),
-		.en(1),
+		.reset(game_state), // reset counter when HIGHSCORE
+		.en(~game_state),
 		.count(count),
-		.clk_out(divided_clk)
+		.timer(mole_clk)
 	);
    
+	// count to 3 from divided clk
+	up_counter #(
+		.WIDTH (4),
+		.TERM_CNT (15)
+	) round_counter (
+		.clk(mole_clk),
+		.reset(game_state), // was key[0]
+		.en(~game_state),
+		.count(),
+		.timer(round_clk) // determines when a round is over.
+	);
+	
+	// clock divider for idle
+	up_counter #(
+		.WIDTH (22),
+		.TERM_CNT (4194303)
+	) idle_divider (
+		.clk(MAX10_CLK1_50),
+		.reset(~game_state), // reset counter when HIGHSCORE
+		.en(game_state),
+		.count(),
+		.timer(idle_timer)
+	);
+	
+	up_counter #(
+		.WIDTH (4),
+		.TERM_CNT (10)
+	) idle_counter (
+		.clk(idle_timer),
+		.reset(~game_state), // was key[0]
+		.en(game_state),
+		.count(led_select),
+		.timer() // determines when a round is over.
+	);
+	
+	debounce #(.DWELL_CNT(16'd20)) dbc (
+		.clk     (MAX10_CLK1_50),
+		.sig_in  (KEY[0]),
+		.sig_out (start_button)
+);
+
+	
 	moles m (
 		.clk(MAX10_CLK1_50),
-		.rst(~KEY[0]),
+		.mole_clk(mole_clk),
+		.rst(game_state),
+		.idle(led_select),
 		.count(count),
 		.random(cur_rnd_num), // number from prbs
 		.switch({SW[9], SW[8], SW[7], SW[6], SW[5], SW[4], SW[3], SW[2], SW[1], SW[0]}),
@@ -166,14 +234,18 @@ module DE10_LITE_Golden_Top(
 		end
 	end
 		 
-   assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], LEDR[1], LEDR[0]} = moles_out;
+   assign {LEDR[9], LEDR[8], LEDR[7], LEDR[6], LEDR[5], LEDR[4], LEDR[3], LEDR[2], LEDR[1], LEDR[0]} = moles_out[9:0];
    
+	//assign LEDR[9] = round_clk; // debug
+	//assign LEDR[8] = game_state;
+	
 	display_driver hex_leds (
 		.clk        (MAX10_CLK1_50),
+		.displayState(game_state),
 		.dispMode   (1),
 		.oneMsPulse (1),
 		.reset      (~KEY[0]),
-		.score   	  (score),
+		.score   	(score),
 		.highscore  (high_score),
 		.HEX0       (HEX0),
 		.HEX1       (HEX1),
@@ -182,7 +254,6 @@ module DE10_LITE_Golden_Top(
 		.HEX4       (HEX4),
 		.HEX5       (HEX5)
 	);
-   
 
 				 
 endmodule

@@ -1,5 +1,6 @@
 module display_driver (
-  input clk,
+  input        clk,
+  input        displayState,
   input        dispMode,
   input        oneMsPulse,
   input 			reset,
@@ -8,7 +9,7 @@ module display_driver (
   output [7:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5
 );
 
-  localparam GAME       = 1'b0; // display mode enum
+  localparam GAME_ON    = 1'b0; // display mode enum
   localparam HIGHSCORE  = 1'b1;
   
   localparam CHAR_R = 5'h10;
@@ -23,7 +24,6 @@ module display_driver (
   assign DEC_POWER[1] = 16'd10;
   assign DEC_POWER[0] = 16'd1;
   
-  reg [1:0]  displayState = 0;
   reg [11:0] threeSecCnt;
   
   reg [15:0] decResult;
@@ -43,12 +43,12 @@ module display_driver (
   
   always @(*)
   begin
-	if(reset) begin
+	/*if(reset) begin // must hold key down
 	displayState = 1;
 	end else begin
 	displayState = 0;
-	end
-    if (displayState == GAME) begin // regular score
+	end*/
+    if (displayState == GAME_ON) begin // regular score
       if (dispMode) // hex
         {char5,char4,char3,char2,char1,char0} = {1'b0,score[23:20],1'b0,score[19:16],1'b0,score[15:12],1'b0,score[11:8],1'b0,score[7:4],1'b0,score[3:0]};
       else begin // decimal
